@@ -85,3 +85,5 @@ module.exports = {
 ## Adding typescript support shown above
 
 If you're using Javascript, be sure to include both `javascript` and `typescript` as languages -- `typescript` is what generates the auto-suggestions while writing in `javascript`.
+
+I manually rigged both FEMar's above Vue component and Ten A's fork of pravdomil's types together, modifying only what I needed to make it work, [seen here](https://github.com/Inventsable/ovid/tree/master/src/components/monaco-adobe). I had to [add a single function](https://github.com/Inventsable/ovid/blob/master/src/components/monaco-adobe/monaco.js#L108) that reads the contents of each typescript file (themselves stripped of top-line references), appends them to a single variable, then passes them into monaco's library data before initialization. Should be app/workspace agnostic and able to be copy/pasted with exception to needing `npm install monaco-editor` directly rather than `npm install`monaco-editor-vue`.
