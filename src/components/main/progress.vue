@@ -1,15 +1,18 @@
 <template>
   <!-- https://vuetifyjs.com/en/components/progress#progress -->
-  <v-progress-linear
-    id="progressbar"
-    v-model="value"
-    :active="show"
-    :indeterminate="query"
-    :query="true"
-    :style="getProgressStyle()"
-    height="4"
-    :color="getProgressColor()"
-  ></v-progress-linear>
+  <div class="progress-container">
+    <div class="progress-mask"></div>
+    <v-progress-linear
+      id="progressbar"
+      v-model="value"
+      :active="show"
+      :indeterminate="query"
+      :query="true"
+      :style="getProgressStyle()"
+      height="4"
+      :color="getProgressColor()"
+    ></v-progress-linear>
+  </div>
 </template>
 
 <script>
@@ -17,6 +20,7 @@ export default {
   name: "progressbar",
   data: () => ({
     value: 0,
+    color: "primary",
     show: true,
     query: false
   }),
@@ -26,13 +30,13 @@ export default {
     }
   },
   mounted() {
-    this.app.progressbar = this;
+    this.app.progress = this;
   },
   methods: {
     getProgressColor() {
       if (!this.query && this.value == 0) return "rgb(21,21,21)";
       // else
-      return "primary";
+      return this.color;
     },
     getProgressStyle() {
       return `
@@ -44,11 +48,13 @@ export default {
       `;
     },
     startIndeterminateProgress() {
+      this.color = "primary";
       this.query = true;
       this.show = true;
       this.value = 0;
     },
     startStepProgress() {
+      this.color = "primary";
       this.show = true;
       this.value = 0;
     },
@@ -59,6 +65,7 @@ export default {
       this.query = false;
       this.show = false;
       this.value = 0;
+      this.color = "rgb(21,21,21)";
     }
   }
 };
@@ -67,5 +74,20 @@ export default {
 <style>
 .v-progress-linear {
   margin: 0px;
+  z-index: 201;
+}
+
+.progress-container {
+  height: 0px;
+}
+
+.progress-mask {
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  z-index: 200;
+  height: 4px;
+  width: 100%;
+  background-color: var(--color-dark-accent);
 }
 </style>

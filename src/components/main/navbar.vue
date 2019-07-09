@@ -10,8 +10,12 @@
         <v-spacer></v-spacer>
 
         <!-- https://vuetifyjs.com/en/components/buttons#button -->
-        <v-btn v-for="(button, key) in buttons" :key="key" @click="goToLink(button.link)" icon flat>
+        <!-- <v-btn v-for="(button, key) in buttons" :key="key" @click="goToLink(button.link)" icon flat>
           <v-icon small>{{button.icon}}</v-icon>
+        </v-btn>-->
+
+        <v-btn icon flat @click="runScript()">
+          <v-icon>mdi-play-circle</v-icon>
         </v-btn>
       </v-toolbar>
     </div>
@@ -47,6 +51,9 @@ export default {
   methods: {
     goToLink(link) {
       cep.util.openURLInDefaultBrowser(link);
+    },
+    runScript() {
+      this.app.runEditor();
     }
   }
 };
@@ -58,5 +65,6 @@ export default {
 .theme--dark.v-toolbar {
   background-color: var(--color-dark-accent);
   cursor: default;
+  z-index: 202;
 }
 </style>

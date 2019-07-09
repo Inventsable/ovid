@@ -30,9 +30,11 @@ export default {
     fakeCode: "text"
   }),
   async created() {
-    this.fakeCode = fs.readFileSync(`${this.root}/src/sample.js`, {
-      encoding: "utf-8"
-    });
+    // this.fakeCode = fs.readFileSync(`${this.root}/src/sample.js`, {
+    //   encoding: "utf-8"
+    // });
+
+    this.fakeCode = this.app.storage.getItem("doc");
   }
 };
 </script>

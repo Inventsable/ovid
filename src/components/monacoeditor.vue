@@ -2,6 +2,7 @@
   <div class="editorContainer">
     <div :style="padTop()"></div>
     <MonacoEditor
+      id="editor"
       ref="editor"
       :width="editorW"
       :height="editorH"
@@ -10,6 +11,7 @@
       :language="lang"
       :options="options"
       @change="onChange"
+      @keyup="checkKey"
     ></MonacoEditor>
   </div>
 </template>
@@ -33,8 +35,13 @@ export default {
 
     this.editor = this.$refs.editor._getEditor();
     this.theme = this.editor._theme;
-    console.log(this.editor);
+    // console.log(this.editor);
     this.restyleEditor(this.editor);
+    let editor = document.getElementById("editor");
+
+    editor.addEventListener("keyup", evt => {
+      this.checkKey(evt);
+    });
   },
   data: () => ({
     wOffset: 0,
@@ -66,8 +73,16 @@ export default {
     }
   },
   methods: {
+    checkKey(evt) {
+      console.log(evt);
+      if (evt.key == "Enter" && evt.altKey) {
+        console.log("Run!");
+        this.app.runEditor();
+      }
+    },
     onChange(value) {
-      console.log(value);
+      // console.log(value);
+      this.app.storage.setItem("doc", value);
     },
     padTop() {
       return `

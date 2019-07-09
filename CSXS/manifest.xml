@@ -23,8 +23,8 @@
     <Extension Id="com.ovid.panel">
       <DispatchInfo>
         <Resources>
-          <MainPath>./public/index-dev.html</MainPath>
-          <!-- <MainPath>./dist/index.html</MainPath> -->
+          <!-- <MainPath>./public/index-dev.html</MainPath> -->
+          <MainPath>./dist/index.html</MainPath>
           <CEFCommandLine>
             <Parameter>--enable-nodejs</Parameter>
             <Parameter>--mixed-context</Parameter>
@@ -42,8 +42,8 @@
               <Width>280</Width>
             </Size>
             <MaxSize>
-              <Height>500</Height>
-              <Width>598</Width>
+              <Height>1000</Height>
+              <Width>1000</Width>
             </MaxSize>
             <MinSize>
               <Height>300</Height>

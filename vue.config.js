@@ -1,9 +1,6 @@
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 module.exports = {
   publicPath: "./",
-  // devServer: {
-  //   host: "localhost"
-  // },
   configureWebpack: {
     plugins: [
       new MonacoWebpackPlugin({

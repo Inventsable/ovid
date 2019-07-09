@@ -49,6 +49,8 @@ export default {
     loadingscreen: null,
     navbar: null,
     menus: null,
+    monaco: null,
+    editor: null,
     hasNavbar: true,
     notification: {
       text: "Extension is mounted",
@@ -78,6 +80,14 @@ export default {
     this.$router.push({ name: "home" });
   },
   methods: {
+    runEditor() {
+      this.progress.startIndeterminateProgress();
+      // this.csInterface.evalScript(`alert('Hello?')`);
+      this.csInterface.evalScript(this.monaco.editor.getValue());
+      setTimeout(() => {
+        this.progress.stopProgress();
+      }, 1000);
+    },
     dispatchEvent(name, data) {
       var event = new CSEvent(name, "APPLICATION");
       event.data = data;
