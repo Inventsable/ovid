@@ -1,6 +1,6 @@
 {
   "name": "ovid",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -19,6 +19,7 @@
     "monaco-editor-webpack-plugin": "^1.7.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
+    "vue-splitpane": "^1.0.4",
     "vuetify": "^1.5.5"
   },
   "devDependencies": {

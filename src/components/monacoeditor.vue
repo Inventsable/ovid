@@ -1,24 +1,38 @@
 <template>
   <div class="editorContainer">
-    <div :style="padTop()"></div>
-    <MonacoEditor
-      id="editor"
-      ref="editor"
-      :width="editorW"
-      :height="editorH"
-      theme="vs-dark"
-      :value="code"
-      :language="lang"
-      :options="options"
-      @change="onChange"
-      @keyup="checkKey"
-    ></MonacoEditor>
+    <split-pane
+      v-on:resize="resize"
+      id="contents"
+      :min-percent="0"
+      :default-percent="80"
+      split="horizontal"
+    >
+      <template id="paneL" slot="paneL">
+        <div :style="padTop()"></div>
+        <MonacoEditor
+          id="editor"
+          ref="editor"
+          :width="editorW"
+          :height="editorH"
+          theme="vs-dark"
+          :value="code"
+          :language="lang"
+          :options="options"
+          @change="onChange"
+          @keyup="checkKey"
+        ></MonacoEditor>
+      </template>
+      <template id="paneR" slot="paneR">
+        <consoler />
+      </template>
+    </split-pane>
   </div>
 </template>
  
 <script>
-// import MonacoEditor from "monaco-editor-vue";
-// import MonacoEditor from "./monaco-editor-vue/src/index";
+import splitPane from "vue-splitpane";
+
+import consoler from "./editor/console";
 import MonacoEditor from "./monaco-adobe/monaco.js";
 export default {
   name: "App",
@@ -27,18 +41,17 @@ export default {
     lang: String
   },
   components: {
-    MonacoEditor
+    MonacoEditor,
+    consoler,
+    "split-pane": splitPane
   },
   mounted() {
     this.handleEditorSize();
     this.app.monaco = this;
-
     this.editor = this.$refs.editor._getEditor();
     this.theme = this.editor._theme;
-    // console.log(this.editor);
     this.restyleEditor(this.editor);
     let editor = document.getElementById("editor");
-
     editor.addEventListener("keyup", evt => {
       this.checkKey(evt);
     });
@@ -73,15 +86,18 @@ export default {
     }
   },
   methods: {
+    resize(evt) {
+      this.handleEditorSize();
+      this.app.console.handleResize(
+        this.$el.children.contents.children[2].offsetHeight
+      );
+    },
     checkKey(evt) {
-      console.log(evt);
       if (evt.key == "Enter" && evt.altKey) {
-        console.log("Run!");
         this.app.runEditor();
       }
     },
     onChange(value) {
-      // console.log(value);
       this.app.storage.setItem("doc", value);
     },
     padTop() {
@@ -92,35 +108,20 @@ export default {
       `;
     },
     handleEditorSize() {
+      let paneL = document.getElementById("paneL");
       this.editorW = window.innerWidth - this.wOffset;
-      this.editorH =
-        window.innerHeight -
-        this.hOffset -
-        this.masterHOffset -
-        this.topPadding;
-      console.log(
-        `${window.innerHeight} - ${this.hOffset} == ${window.innerHeight -
-          this.hOffset}`
+      this.editorH = this.$el.children.contents.children[0].offsetHeight - 7;
+      this.app.console.handleResize(
+        this.$el.children.contents.children[2].offsetHeight
       );
       window.addEventListener("resize", () => {
         this.editorW = window.innerWidth - this.wOffset;
-        this.editorH =
-          window.innerHeight -
-          this.hOffset -
-          this.masterHOffset -
-          this.topPadding;
+        this.editorH = this.$el.children.contents.children[0].offsetHeight - 7;
       });
     },
     restyleEditor(editor) {
-      // let targets = ["monaco-editor-background", "margin"];
-
-      // let elt = document.getElementsByClassName("monaco-editor-background");
-      // elt = elt[0];
-      // // elt.style.backgroundColor = "red";
-
       let theme = editor._themeService._theme;
       theme.colors["editor.background"].rgba = { r: 10, g: 10, b: 10, a: 1 };
-      console.log(theme);
     }
   }
 };
@@ -134,7 +135,9 @@ export default {
   justify-content: center;
   align-items: centers;
   width: 100%;
+  height: calc(100vh - 56px);
   margin-top: 6px;
+  overflow: hidden;
 }
 
 .monaco-editor,

@@ -51,6 +51,7 @@ export default {
     menus: null,
     monaco: null,
     editor: null,
+    console: null,
     hasNavbar: true,
     notification: {
       text: "Extension is mounted",
@@ -63,9 +64,10 @@ export default {
   mounted() {
     console.clear();
     this.csInterface = new CSInterface();
-    this.csInterface.addEventListener("console", this.consoler);
-
     // Utility components are already mounted prior to this
+
+    console.log(this.console);
+    // this.console.init();
 
     console.log(
       `${this.identity.extName} ${this.identity.extVersion} : ${

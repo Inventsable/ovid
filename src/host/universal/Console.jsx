@@ -1,6 +1,9 @@
 var console = {
   log: function(data) {
     JSXEvent(data, "console");
+  },
+  clear: function() {
+    JSXEvent(null, "clearconsole");
   }
 };
 
