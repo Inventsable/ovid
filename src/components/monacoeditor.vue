@@ -3,7 +3,7 @@
     <split-pane
       v-on:resize="resize"
       id="contents"
-      :min-percent="0"
+      :min-percent="5"
       :default-percent="80"
       split="horizontal"
     >

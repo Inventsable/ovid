@@ -39,7 +39,6 @@ export default {
   methods: {
     processText() {
       let temptext = this.text;
-
       temptext = temptext.replace("let", "var");
       temptext = temptext.replace("const", "var");
     },
