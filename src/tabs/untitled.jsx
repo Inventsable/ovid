@@ -9,7 +9,7 @@ var item = {
   PAYINFO: "payment@inventsable.cc",
   PAYTOTAL: "$$$$$",
   ID: "1005",
-  CLINET: "CLIENT HERE"
+  CLIENT: "CLIENT HERE"
 };
 
 function assignTextFromItem(item) {
@@ -28,7 +28,8 @@ function resetAllTemplateText() {
     var active = app.activeDocument.textFrames[i];
     if (active.name) active.contents = "xxxx";
   }
+  console.clear();
 }
 
-assignTextFromItem();
-// resetAllTemplateText();
+// assignTextFromItem(item);
+resetAllTemplateText();

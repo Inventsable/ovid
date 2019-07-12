@@ -89,7 +89,7 @@ export default {
     runEditor() {
       this.progress.startIndeterminateProgress();
       // console.log("Hello?");
-      this.csInterface.evalScript(`alert('Hello?')`);
+      // this.csInterface.evalScript(`alert('Hello?')`);
       this.csInterface.evalScript(this.monaco.editor.getValue());
       setTimeout(() => {
         this.progress.stopProgress();
