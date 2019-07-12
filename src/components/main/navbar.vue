@@ -2,7 +2,7 @@
   <div>
     <!-- Toolbar element existing outside of route -->
     <progressbar />
-    <div>
+    <div v-if="hasNavbar">
       <!-- https://vuetifyjs.com/en/components/toolbars#toolbar -->
       <v-toolbar app card dense dark>
         <!-- <v-toolbar-title>{{$route.name}}</v-toolbar-title> -->
@@ -36,7 +36,8 @@ export default {
         icon: "mdi-vuetify",
         link: "https://vuetifyjs.com/en/components/toolbars#toolbar"
       }
-    ]
+    ],
+    hasNavbar: false
   }),
   computed: {
     app() {

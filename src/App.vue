@@ -4,7 +4,8 @@
     <stylizer />
     <identity />
     <menus />
-    <navbar v-if="hasNavbar" />
+    <navbar />
+    <tablist />
     <alert />
     <v-content :style="getContentStyle()">
       <router-view />
@@ -22,7 +23,9 @@ import alert from "./components/main/alert";
 import notification from "./components/main/notification.vue";
 import navbar from "./components/main/navbar.vue";
 import loadingscreen from "./components/main/loadingscreen.vue";
+
 import bottombar from "./components/bottombar.vue";
+import tablist from "./components/editor/tabList.vue";
 
 export default {
   name: "App",
@@ -32,6 +35,7 @@ export default {
     stylizer,
     navbar,
     menus,
+    tablist,
     bottombar,
     loadingscreen,
     alert
@@ -84,7 +88,8 @@ export default {
   methods: {
     runEditor() {
       this.progress.startIndeterminateProgress();
-      // this.csInterface.evalScript(`alert('Hello?')`);
+      // console.log("Hello?");
+      this.csInterface.evalScript(`alert('Hello?')`);
       this.csInterface.evalScript(this.monaco.editor.getValue());
       setTimeout(() => {
         this.progress.stopProgress();
@@ -100,18 +105,18 @@ export default {
       // This is done to allow for interchangeable main content with certain universal components (e.g. toolbars like <navbar>)
       return `
         overflow: auto;
-        margin-top: ${
-          this.$route.name == "home"
-            ? this.hasNavbar
-              ? this.getCSS("toolbar-height") - 2
-              : "0"
-            : "0"
-        }px;
         padding: 0px 0px 0px 0px;
-        max-height: calc(100vh - ${
-          this.hasNavbar ? this.getCSS("toolbar-height") : "0"
-        }px);
       `;
+      // margin-top: ${
+      //   this.$route.name == "home"
+      //     ? this.hasNavbar
+      //       ? this.getCSS("toolbar-height") - 2
+      //       : "0"
+      //     : "0"
+      // }px;
+      // max-height: calc(100vh - ${
+      //   this.hasNavbar ? this.getCSS("toolbar-height") : "0"
+      // }px);
     },
     loadScript(path) {
       // Correctly loads a script regardless of whether Animate or regular CEP app

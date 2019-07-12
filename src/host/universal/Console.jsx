@@ -3,7 +3,7 @@ var console = {
     JSXEvent(data, "console");
   },
   clear: function() {
-    JSXEvent(null, "clearconsole");
+    JSXEvent("", "clearconsole");
   }
 };
 

@@ -26,15 +26,32 @@ export default {
       );
     }
   },
+  watch: {
+    $route() {
+      this.retrieveFromStorage();
+    }
+  },
   data: () => ({
     fakeCode: "text"
   }),
-  async created() {
-    // this.fakeCode = fs.readFileSync(`${this.root}/src/sample.js`, {
-    //   encoding: "utf-8"
-    // });
-
-    this.fakeCode = this.app.storage.getItem("doc");
+  created() {
+    // console.log(this.$router)
+    if (!this.$route.params.id)
+      this.$router.push({
+        name: "home",
+        params: {
+          id: "untitled.jsx"
+        }
+      });
+  },
+  methods: {
+    retrieveFromStorage() {
+      let label = this.$route.params.id;
+      if (this.app.storage.getItem(label))
+        this.fakeCode = this.app.storage.getItem(label);
+      // this.fakeCode = JSON.parse(this.app.storage.getItem(label));
+      else this.fakeCode = "";
+    }
   }
 };
 </script>
@@ -45,5 +62,14 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+#container {
+  height: 100%;
+}
+
+.v-content__wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 </style>

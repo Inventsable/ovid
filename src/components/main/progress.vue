@@ -1,7 +1,6 @@
 <template>
   <!-- https://vuetifyjs.com/en/components/progress#progress -->
   <div class="progress-container">
-    <div class="progress-mask"></div>
     <v-progress-linear
       id="progressbar"
       v-model="value"
@@ -41,7 +40,7 @@ export default {
     getProgressStyle() {
       return `
         position: absolute;
-        top: ${this.app.getCSS("toolbar-height")}px;
+        top: 36px;
         margin-top: 0px;
         left: 0px;
         z-index: 2000;

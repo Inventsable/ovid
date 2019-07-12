@@ -1,5 +1,6 @@
 <template>
   <div class="bottomBar" :style="getHeight()">
+    <!-- <progressbar /> -->
     <span class="version-id">{{version}}</span>
   </div>
 </template>
@@ -7,6 +8,9 @@
 <script>
 export default {
   name: "bottombar",
+  // components: {
+  //   progressbar
+  // },
   computed: {
     app() {
       return this.$root.$children[0];

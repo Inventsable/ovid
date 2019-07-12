@@ -59,6 +59,7 @@ export default {
       this.show = true;
     },
     clearConsole() {
+      console.log("Clearing console!");
       this.text = "";
     },
     logData(msg) {
@@ -82,6 +83,7 @@ export default {
 #console {
   background-color: var(--color-dark-accent);
   width: 100%;
+  margin-top: 6px;
   /* min-height: 100px; */
   transform: rotate(0);
 }

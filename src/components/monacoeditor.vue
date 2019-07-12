@@ -98,7 +98,7 @@ export default {
       }
     },
     onChange(value) {
-      this.app.storage.setItem("doc", value);
+      this.app.storage.setItem(this.$route.params.id || "doc", value);
     },
     padTop() {
       return `
@@ -110,13 +110,13 @@ export default {
     handleEditorSize() {
       let paneL = document.getElementById("paneL");
       this.editorW = window.innerWidth - this.wOffset;
-      this.editorH = this.$el.children.contents.children[0].offsetHeight - 7;
+      this.editorH = this.$el.children.contents.children[0].offsetHeight;
       this.app.console.handleResize(
         this.$el.children.contents.children[2].offsetHeight
       );
       window.addEventListener("resize", () => {
         this.editorW = window.innerWidth - this.wOffset;
-        this.editorH = this.$el.children.contents.children[0].offsetHeight - 7;
+        this.editorH = this.$el.children.contents.children[0].offsetHeight;
       });
     },
     restyleEditor(editor) {
@@ -135,8 +135,8 @@ export default {
   justify-content: center;
   align-items: centers;
   width: 100%;
-  height: calc(100vh - 56px);
-  margin-top: 6px;
+  height: calc(100vh - 58px);
+  /* margin-top: 6px; */
   overflow: hidden;
 }
 
