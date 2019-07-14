@@ -10,6 +10,7 @@
     <v-content :style="getContentStyle()">
       <router-view />
     </v-content>
+    <drawer />
     <bottombar />
     <!-- <loadingscreen /> -->
   </v-app>
@@ -25,12 +26,16 @@ import navbar from "./components/main/navbar.vue";
 import loadingscreen from "./components/main/loadingscreen.vue";
 
 import bottombar from "./components/bottombar.vue";
+import drawer from "./components/editor/drawer.vue";
 import tablist from "./components/editor/tabList.vue";
+
+const Babel = require("@babel/standalone");
 
 export default {
   name: "App",
   components: {
     identity,
+    drawer,
     notification,
     stylizer,
     navbar,
@@ -55,8 +60,11 @@ export default {
     menus: null,
     monaco: null,
     editor: null,
+    drawer: null,
     console: null,
+    tabsList: null,
     hasNavbar: true,
+    lastPath: null,
     notification: {
       text: "Extension is mounted",
       color: "primary",
@@ -70,7 +78,6 @@ export default {
     this.csInterface = new CSInterface();
     // Utility components are already mounted prior to this
 
-    console.log(this.console);
     // this.console.init();
 
     console.log(
@@ -78,19 +85,51 @@ export default {
         this.identity.isDev ? "DEV" : "BUILD"
       }`
     );
-    this.isMounted = true;
 
+    this.isMounted = true;
     this.loadUniversalScripts();
 
     // Vue Router must be manually initialized in CEP:
-    this.$router.push({ name: "home" });
+    if (this.storage.getItem("lastRoute")) {
+      let lastRoute = this.storage.getItem("lastRoute");
+      this.$router.push({
+        name: "home",
+        params: {
+          id: lastRoute
+        }
+      });
+    } else {
+      this.$router.push({
+        name: "home",
+        params: {
+          id: "untitled.jsx"
+        }
+      });
+    }
   },
   methods: {
-    runEditor() {
+    compiledContent(msg = null) {
+      let output = Babel.transform(msg || this.monaco.editor.getValue(), {
+        presets: ["es2015"],
+        plugins: [
+          // https://babeljs.io/docs/en/plugins
+          "transform-template-literals",
+          "transform-block-scoping",
+          "transform-arrow-functions"
+        ]
+      }).code;
+      output = output.replace("const", "var");
+      output = output.replace("let", "var");
+      return output;
+    },
+    runEditor(msg = null) {
       this.progress.startIndeterminateProgress();
-      // console.log("Hello?");
-      // this.csInterface.evalScript(`alert('Hello?')`);
-      this.csInterface.evalScript(this.monaco.editor.getValue());
+
+      this.csInterface.evalScript(
+        `try{ ${this.compiledContent(
+          msg
+        )} } catch(err) { JSXEvent('consoleerr', data) }`
+      );
       setTimeout(() => {
         this.progress.stopProgress();
       }, 1000);
@@ -193,7 +232,6 @@ export default {
   --toolbar-height: 30;
   --bottombar-height: 20;
   --offset-height: calc(var(--toolbar-height) + var(--bottombar-height));
-
   --color-dark-accent: #2a2a2a;
 
   --mtk1: #cdcdcd;

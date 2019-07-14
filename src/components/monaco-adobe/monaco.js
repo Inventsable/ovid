@@ -90,7 +90,10 @@ export default {
 
   methods: {
     initMonaco() {
-      this._getTypes();
+      // this._getTypes();
+      this._getAltTypes();
+      this._getAdobeTokens();
+
       const { value, language, theme, options } = this;
       Object.assign(options, this._editorBeforeMount()); //编辑器初始化前
       this.editor = monaco.editor[
@@ -105,35 +108,133 @@ export default {
       this._editorMounted(this.editor); //编辑器初始化后
     },
 
-    _getTypes() {
+    _getAltTypes() {
       let appName = JSON.parse(window.__adobe_cep__.getHostEnvironment())
         .appName;
       let root = decodeURI(
         window.__adobe_cep__.getSystemPath("extension")
       ).replace(/file\:\/{1,}/, "");
 
-      let typeList = ["global", "plugplug", "ScriptUI", appName];
-      let typings;
-      typeList.forEach(types => {
-        typings +=
-          fs.readFileSync(
-            `${root}/src/components/monaco-adobe/types/${types}.d.ts`,
-            {
-              encoding: "utf-8"
-            }
-          ) + "\r\n";
+      monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+        // target: 1,
+        allowNonTsExtensions: true,
+        target: monaco.languages.typescript.ScriptTarget.CommonJS,
+        noLib: true,
+        allowJs: true,
+        noEmit: true
       });
 
-      monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-        target: monaco.languages.typescript.ScriptTarget.ES6,
-        allowNonTsExtensions: true
-      });
-      // let mergeTypes = globalTypes + "\r\n" + appTypes;
       monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        typings,
-        `filename/${appName}.d.ts`
+        fs.readFileSync(
+          `${root}/src/components/monaco-adobe/types-for-adobe/${appName}.d.ts`,
+          {
+            encoding: "utf-8"
+          }
+        ),
+        `${root}/src/components/monaco-adobe/types-for-adobe/${appName}.d.ts`
       );
     },
+
+    _getAdobeTokens() {
+      const self = this;
+      let appName = JSON.parse(window.__adobe_cep__.getHostEnvironment())
+        .appName;
+      let root = decodeURI(
+        window.__adobe_cep__.getSystemPath("extension")
+      ).replace(/file\:\/{1,}/, "");
+
+      let sourcetext = fs.readFileSync(
+        `${root}/src/components/monaco-adobe/types-for-adobe/${appName}.d.ts`,
+        {
+          encoding: "utf-8"
+        }
+      );
+
+      this._tokenizeAdobe(sourcetext).then(result => {
+        console.log("Result:");
+        console.log(result);
+        // Register a new language
+        // monaco.languages.register({
+        //   id: "adobeTypes"
+        // });
+
+        const model = self.editor.getModel();
+        console.log(model._tokens);
+
+        console.log(monaco.languages.getLanguages());
+        // Define a new theme that contains only rules that match this language
+        // monaco.editor.defineTheme("myCoolTheme", {
+        //   base: "vs",
+        //   inherit: false,
+        //   rules: [
+        //     {
+        //       token: "keyword",
+        //       foreground: "ff0000"
+        //     }
+        //     // {
+        //     //   token: "custom-error",
+        //     //   foreground: "ff0000",
+        //     //   fontStyle: "bold"
+        //     // },
+        //     // {
+        //     //   token: "custom-notice",
+        //     //   foreground: "FFA500"
+        //     // },
+        //     // {
+        //     //   token: "custom-date",
+        //     //   foreground: "008800"
+        //     // }
+        //   ]
+        // });
+      });
+    },
+
+    _tokenizeAdobe(content) {
+      return new Promise((resolve, reject) => {
+        // console.log(content);
+
+        let result = [];
+
+        let tokenizer = [
+          {
+            // rx: /^[\s\t]*[a-zA-Z]{1,}\s?(?=\()/gm,
+            rx: /^([\s\t]*|declare\sfunction\s)[a-zA-Z]{1,}\s?(?=\()/gm,
+            tag: "functions"
+          },
+          {
+            rx: /^[\s\t]*(readonly\s)?[a-zA-Z]{1,}\s?(?=\:)/gm,
+            tag: "props"
+          },
+          {
+            rx: /^[\s\t]*[a-zA-Z]{1,}\s?(?=\=)/gm,
+            tag: "enum"
+          }
+        ];
+        console.log(content);
+
+        tokenizer.forEach(token => {
+          let matches = content.match(token.rx);
+          matches = matches.map(match => {
+            return !/props/.test(token.tag)
+              ? !/functions/.test(token.tag)
+                ? match.trim()
+                : match
+                    .trim()
+                    .replace("declare function", "")
+                    .trim()
+              : match
+                  .trim()
+                  .replace("readonly", "")
+                  .trim();
+          });
+          result[token.tag] = [...new Set(matches)];
+          console.log(`${matches.length} => ${result[token.tag].length}`);
+        });
+
+        resolve(result);
+      });
+    },
+
     _getEditor() {
       if (!this.editor) return null;
       return this.diffEditor ? this.editor.modifiedEditor : this.editor;

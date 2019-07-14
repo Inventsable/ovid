@@ -8,7 +8,7 @@
 const require = cep_node.require || require;
 const fs = require("fs");
 
-import monacoeditor from "@/components/monacoeditor.vue";
+import monacoeditor from "@/components/editor/editor.vue";
 
 export default {
   name: "home",
@@ -29,20 +29,28 @@ export default {
   watch: {
     $route() {
       this.retrieveFromStorage();
+      this.app.storage.setItem("lastRoute", this.$route.params.id);
     }
   },
   data: () => ({
     fakeCode: "text"
   }),
   created() {
-    // console.log(this.$router)
-    if (!this.$route.params.id)
+    console.log(this.$router);
+    console.log("Hello?");
+    console.log(this.$route);
+    if (!this.$route.params.id) {
+      console.log("Change route");
       this.$router.push({
         name: "home",
         params: {
           id: "untitled.jsx"
         }
       });
+    } else {
+      let lastRoute = this.app.storage.getItem("lastRoute") || "untitled.jsx";
+      this.fakeCode = this.app.storage.getItem(lastRoute) || "";
+    }
   },
   methods: {
     retrieveFromStorage() {

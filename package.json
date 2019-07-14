@@ -12,6 +12,8 @@
     "help": "node ./src/utils/dev/npmCommands.js help"
   },
   "dependencies": {
+    "@babel/core": "^7.5.4",
+    "@babel/standalone": "^7.5.4",
     "@mdi/font": "^3.7.95",
     "core-js": "^2.6.5",
     "lottie-web": "^5.5.6",

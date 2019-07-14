@@ -1,7 +1,14 @@
 <template>
   <div id="console" class="push-up">
     <div class="console-tab">Console</div>
-    <div v-if="text.length" class="console-drawer" v-html="text"></div>
+    <!-- <v-layout > -->
+    <div v-if="history.length" class="console-drawer">
+      <div v-for="(line, i) in history" :key="i" class="console-line" :style="styleByType(line)">
+        <v-icon small>{{line.error ? 'mdi-alert' : 'mdi-information'}}</v-icon>
+        <span class="ml-2">{{line.text}}</span>
+      </div>
+    </div>
+    <!-- </v-layout> -->
     <div v-else class="console-placeholder">Use console.log( ) to display information here</div>
     <div v-if="text.length" class="console-clear" @click="clearConsole()">
       <v-btn icon flat>
@@ -11,12 +18,16 @@
   </div>
 </template>
 
+
+
+
 <script>
 export default {
   name: "consoler",
   data: () => ({
     hidden: false,
     text: "",
+    history: [],
     height: 20
   }),
   computed: {
@@ -37,6 +48,12 @@ export default {
     }
   },
   methods: {
+    styleByType(line) {
+      // width: 100%;
+      return `
+        color: ${line.err ? "#ff0000" : "#fff"};
+      `;
+    },
     processText() {
       let temptext = this.text;
       temptext = temptext.replace("let", "var");
@@ -49,8 +66,14 @@ export default {
       consoleelt.style.height = this.height;
     },
     init() {
-      this.app.csInterface.addEventListener("console", this.logData);
-      this.app.csInterface.addEventListener("clearconsole", this.clearConsole);
+      setTimeout(() => {
+        this.app.csInterface.addEventListener("console", this.logData);
+        this.app.csInterface.addEventListener("consoleerr", this.logError);
+        this.app.csInterface.addEventListener(
+          "clearconsole",
+          this.clearConsole
+        );
+      }, 200);
     },
     hide() {
       this.show = false;
@@ -63,7 +86,18 @@ export default {
       this.text = "";
     },
     logData(msg) {
-      this.text += `> ${msg.data}` + "<br>";
+      // this.text += `> ${msg.data}` + "<br>";
+      this.history.push({
+        text: msg.data,
+        error: false
+      });
+    },
+    logError(msg) {
+      // this.text += `> ${msg.data}` + "<br>";
+      this.history.push({
+        text: msg.data,
+        error: true
+      });
     },
     scrollToBottom() {
       var div = document.getElementById("console");
@@ -104,6 +138,10 @@ export default {
   border-radius: 10px 10px 0px 0px;
 }
 
+.console-line {
+  width: 100%;
+}
+
 .console-clear {
   position: absolute;
   top: 0px;
@@ -116,6 +154,11 @@ export default {
   font-size: 1.5rem;
   height: 100%;
   overflow-y: scroll;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  /* flex-wrap: nowrap; */
 }
 
 .console-placeholder {
